@@ -95,7 +95,7 @@ void base16_encode(char * restrict dst, const void * restrict src, size_t n)
 
     if (tab == NULL) tab = __base16_enc_tabs[*((const uint8_t *) &magic)];
 
-    for (i = 0; i < n; i++) d[i] = tab[*s++];
-    dst[i<<1] = '\0';   /* Mark EOS */
+    for (i = 0; i < n; i++) *d++ = tab[*s++];
+    *((char *) d) = '\0';   /* Mark EOS */
 }
 
