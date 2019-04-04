@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 #include <arpa/inet.h>
@@ -21,20 +22,22 @@ void generate_u32_table(void)
 
     for (i = 0; i <= USHRT_MAX; i++) {
         base16_encode(buff, &i, sizeof(uint16_t));
-        //printf("%s,%c", buff, i % M != N ? ' ' : '\n');
-        /* Machine endianness */
-        //printf("%#x,%c", *((uint32_t *) buff), i % M != N ? ' ' : '\n');
-
-        /* Big endian(human intuitive) representation from big endian */
-        //printf("%#x,%c", htonl(*((uint32_t *) buff)), i % M != N ? ' ' : '\n');
-
-        /* Big endian(human intuitive) representation from little endian */
         t = *((uint32_t *) buff);
-        t = (t << 16) | (t >> 16);
-        printf("%#x,%c", htonl(t), i % M != N ? ' ' : '\n');
+
+        /* Result string rep. */
+        //printf("%s,%c", buff, i % M != N ? ' ' : '\n');
+
+        /* Machine endianness */
+        //printf("%#x,%c", t, i % M != N ? ' ' : '\n');
+
+        /* The other endian representation from machine endian */
+        //t = (t << 16) | (t >> 16);
+        //printf("%#x,%c", htonl(t), i % M != N ? ' ' : '\n');
     }
 
     if (USHRT_MAX % M != N) putchar('\n');
+
+    exit(EXIT_SUCCESS);
 }
 
 int main(void)
