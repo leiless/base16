@@ -2,9 +2,11 @@
  * Created 190403 lynnl
  */
 
+#include <assert.h>
+
 #include "base16.h"
 
-static const uint16_t __base16_enc_le[] = {
+static const uint16_t __base16_enc_le16[] = {
     0x3030, 0x3130, 0x3230, 0x3330, 0x3430, 0x3530, 0x3630, 0x3730,
     0x3830, 0x3930, 0x4130, 0x4230, 0x4330, 0x4430, 0x4530, 0x4630,
     0x3031, 0x3131, 0x3231, 0x3331, 0x3431, 0x3531, 0x3631, 0x3731,
@@ -39,7 +41,7 @@ static const uint16_t __base16_enc_le[] = {
     0x3846, 0x3946, 0x4146, 0x4246, 0x4346, 0x4446, 0x4546, 0x4646,
 };
 
-static const uint16_t __base16_enc_be[] = {
+static const uint16_t __base16_enc_be16[] = {
     0x3030, 0x3031, 0x3032, 0x3033, 0x3034, 0x3035, 0x3036, 0x3037,
     0x3038, 0x3039, 0x3041, 0x3042, 0x3043, 0x3044, 0x3045, 0x3046,
     0x3130, 0x3131, 0x3132, 0x3133, 0x3134, 0x3135, 0x3136, 0x3137,
@@ -74,8 +76,8 @@ static const uint16_t __base16_enc_be[] = {
     0x4638, 0x4639, 0x4641, 0x4642, 0x4643, 0x4644, 0x4645, 0x4646,
 };
 
-static const uint16_t *__base16_enc_tabs[] = {
-    __base16_enc_le, __base16_enc_be
+static const uint16_t *__base16_enc_tabs16[] = {
+    __base16_enc_le16, __base16_enc_be16,
 };
 
 /**
@@ -113,9 +115,41 @@ void base16_encode(char * restrict dst, const void * restrict src, size_t n)
     register const uint8_t *s = src;
     register uint16_t *d = (uint16_t *) dst;
 
-    if (tab == NULL) tab = __base16_enc_tabs[*((const uint8_t *) &magic)];
+    if (tab == NULL) tab = __base16_enc_tabs16[*((const uint8_t *) &magic)];
 
     for (i = 0; i < n; i++) *d++ = tab[*s++];
     *((char *) d) = '\0';
+}
+
+static const uint32_t __base16_enc_le32[] = {
+
+};
+
+static const uint32_t __base16_enc_be32[] = {
+
+};
+
+static const uint32_t *__base16_enc_tabs32[] = {
+    __base16_enc_le32, __base16_enc_be32,
+};
+
+/**
+ * see: base16_encode_baseline
+ */
+void base16_encode2(char * restrict dst, const void * restrict src, size_t n)
+{
+    static const uint16_t magic = 0x0100;
+    static const uint32_t *tab = NULL;
+
+    size_t i;
+    register const uint16_t *s = src;
+    register uint32_t *d = (uint32_t *) dst;
+
+    if (tab == NULL) tab = __base16_enc_tabs32[*((const uint8_t *) &magic)];
+
+    for (i = 0; i < (n>>1); i++) *d++ = tab[*s++];
+
+    if (i & 1) assert((i<<1) + 1 == n);
+    base16_encode((char *) d, s, i & 1);
 }
 
