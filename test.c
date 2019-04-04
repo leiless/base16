@@ -2,7 +2,9 @@
  * Created 190403 lynnl
  */
 
+#include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include <limits.h>
 #include <arpa/inet.h>
 
@@ -38,8 +40,9 @@ void generate_u32_table(void)
 int main(void)
 {
     int i;
-    char buff[3];
-    char buff2[5];
+    char buff[512];
+
+    //generate_u32_table();
 
     for (i = 0; i <= UCHAR_MAX; i++) {
         base16_encode_baseline(buff, &i, sizeof(uint8_t));
@@ -54,8 +57,8 @@ int main(void)
     puts("");
 
     for (i = 0; i <= USHRT_MAX; i++) {
-        base16_encode2(buff2, &i, sizeof(uint16_t));
-        printf("%s,%c", buff2, i % 16 != 15 ? ' ' : '\n');
+        base16_encode2(buff, &i, sizeof(uint16_t));
+        printf("%s,%c", buff, i % 16 != 15 ? ' ' : '\n');
     }
     puts("");
 
@@ -65,7 +68,29 @@ int main(void)
     }
     puts("");
 
-    //generate_u32_table();
+    base16_encode2(buff, NULL, 0);
+    assert(!strcmp(buff, ""));
+
+    base16_encode2(buff, "", 0);
+    assert(!strcmp(buff, ""));
+
+    base16_encode2(buff, "f", 1);
+    assert(!strcmp(buff, "66"));
+
+    base16_encode2(buff, "fo", 2);
+    assert(!strcmp(buff, "666F"));
+
+    base16_encode2(buff, "foo", 3);
+    assert(!strcmp(buff, "666F6F"));
+
+    base16_encode2(buff, "foob", 4);
+    assert(!strcmp(buff, "666F6F62"));
+
+    base16_encode2(buff, "fooba", 5);
+    assert(!strcmp(buff, "666F6F6261"));
+
+    base16_encode2(buff, "foobar", 6);
+    assert(!strcmp(buff, "666F6F626172"));
 
     return 0;
 }
