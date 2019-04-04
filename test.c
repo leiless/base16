@@ -56,7 +56,7 @@ void generate_u32_table(void)
         //printf("%s,%c", buff, i % M != N ? ' ' : '\n');
 
         /* Machine endianness */
-        //printf("%#x,%c", t, i % M != N ? ' ' : '\n');
+        printf("%#x,%c", t, i % M != N ? ' ' : '\n');
 
         /* The other endian representation from machine endian */
         //t = (t << 16) | (t >> 16);
@@ -66,6 +66,26 @@ void generate_u32_table(void)
     if (USHRT_MAX % M != N) putchar('\n');
 
     exit(EXIT_SUCCESS);
+}
+
+static void b16_encode(const void *src, size_t n, const char *expected)
+{
+    fprintf(stderr, "b16_encode('%s', %zu, '%s');\n", src, n, expected);
+
+    static char buff[512];
+
+    *buff = '\1';
+    base16_encode_baseline(buff, src, n);
+    fprintf(stderr, "%s\n", buff);
+    assert(!strcmp(buff, expected));
+
+    *buff = '\2';
+    base16_encode(buff, src, n);
+    assert(!strcmp(buff, expected));
+
+    *buff = '\3';
+    base16_encode2(buff, src, n);
+    assert(!strcmp(buff, expected));
 }
 
 int main(void)
@@ -100,40 +120,21 @@ int main(void)
     }
     puts("");
 
-    base16_encode2(buff, NULL, 0);
-    assert(!strcmp(buff, ""));
+    b16_encode("", 0, "");
+    b16_encode(NULL, 0, "");
+    b16_encode("", 1, "00");
+    b16_encode("f", 1, "66");
+    b16_encode("fo", 2, "666F");
+    b16_encode("foo", 3, "666F6F");
+    b16_encode("foob", 4, "666F6F62");
+    b16_encode("fooba", 5, "666F6F6261");
+    b16_encode("foobar", 6, "666F6F626172");
+    b16_encode("foobar!", 7, "666F6F62617221");
+    b16_encode("foobar!!!", 9, "666F6F626172212121");
+    b16_encode("0123456789ABCDEF", 10, "30313233343536373839");
+    b16_encode("0123456789ABCDEF", 15, "303132333435363738394142434445");
 
-    base16_encode2(buff, "", 0);
-    assert(!strcmp(buff, ""));
-
-    base16_encode2(buff, "f", 1);
-    assert(!strcmp(buff, "66"));
-
-    base16_encode2(buff, "fo", 2);
-    assert(!strcmp(buff, "666F"));
-
-    base16_encode2(buff, "foo", 3);
-    assert(!strcmp(buff, "666F6F"));
-
-    base16_encode2(buff, "foob", 4);
-    assert(!strcmp(buff, "666F6F62"));
-
-    base16_encode2(buff, "fooba", 5);
-    assert(!strcmp(buff, "666F6F6261"));
-
-    base16_encode2(buff, "foobar", 6);
-    assert(!strcmp(buff, "666F6F626172"));
-
-    base16_encode2(buff, "foobar!", 7);
-    assert(!strcmp(buff, "666F6F62617221"));
-
-    base16_encode(buff, "foobar!", 7);
-    assert(!strcmp(buff, "666F6F62617221"));
-
-    base16_encode_baseline(buff, "foobar!", 7);
-    assert(!strcmp(buff, "666F6F62617221"));
-
-    fprintf(stderr, "PASS!\n");
+    fprintf(stderr, "\nPASS!\n");
 
     return 0;
 }
