@@ -104,6 +104,8 @@ void base16_encode_baseline(
 }
 
 /**
+ * Optimized base16 encoding(hopefully faster than base16_encode_baseline?)
+ * With minimal .data segment storage overhead(around 1kb)
  * see: base16_encode_baseline
  */
 void base16_encode(char * restrict dst, const void * restrict src, size_t n)
