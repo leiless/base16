@@ -84,18 +84,38 @@ static const uint16_t *__base16_enc_tabs[] = {
  * @param src   Input data buffer
  * @param n     Input buffer size
  */
+void base16_encode_baseline(
+        char * restrict dst,
+        const void * restrict src,
+        size_t n)
+{
+    static const char *tab = "0123456789ABCDEF";
+
+    size_t i;
+    const uint8_t *p;
+
+    for (i = 0, p = src; i < n; i++, p++) {
+        dst[i<<1] = tab[*p >> 4];
+        dst[(i<<1) + 1] = tab[*p & 0xf];
+    }
+    dst[i<<1] = '\0';   /* Mark EOS */
+}
+
+/**
+ * see: base16_encode_baseline
+ */
 void base16_encode(char * restrict dst, const void * restrict src, size_t n)
 {
     static const uint16_t magic = 0x0100;
     static const uint16_t *tab = NULL;
 
-    register size_t i;
+    size_t i;
     register const uint8_t *s = src;
     register uint16_t *d = (uint16_t *) dst;
 
     if (tab == NULL) tab = __base16_enc_tabs[*((const uint8_t *) &magic)];
 
     for (i = 0; i < n; i++) *d++ = tab[*s++];
-    *((char *) d) = '\0';   /* Mark EOS */
+    *((char *) d) = '\0';
 }
 
