@@ -11,6 +11,34 @@
 
 #include "src/base16.h"
 
+#define P       8
+#define Q       (P - 1)
+
+void generate_u16_table(void)
+{
+    int i;
+    uint16_t t;
+    char buff[3];
+
+    for (i = 0; i <= UCHAR_MAX; i++) {
+        base16_encode_baseline(buff, &i, sizeof(uint8_t));
+        t = *((uint16_t *) buff);
+
+        /* Result string rep. */
+        //printf("%s,%c", buff, i % P != Q ? ' ' : '\n');
+
+        /* Machine endianness */
+        printf("%#x,%c", t, i % P != Q ? ' ' : '\n');
+
+        /* The other endian representation from machine endian */
+        //printf("%#x,%c", htons(t), i % P != Q ? ' ' : '\n');
+    }
+
+    if (UCHAR_MAX % P != Q) putchar('\n');
+
+    exit(EXIT_SUCCESS);
+}
+
 #define M       6
 #define N       (M - 1)
 
@@ -45,6 +73,7 @@ int main(void)
     int i;
     char buff[512];
 
+    //generate_u16_table();
     //generate_u32_table();
 
     for (i = 0; i <= UCHAR_MAX; i++) {
@@ -94,6 +123,17 @@ int main(void)
 
     base16_encode2(buff, "foobar", 6);
     assert(!strcmp(buff, "666F6F626172"));
+
+    base16_encode2(buff, "foobar!", 7);
+    assert(!strcmp(buff, "666F6F62617221"));
+
+    base16_encode(buff, "foobar!", 7);
+    assert(!strcmp(buff, "666F6F62617221"));
+
+    base16_encode_baseline(buff, "foobar!", 7);
+    assert(!strcmp(buff, "666F6F62617221"));
+
+    fprintf(stderr, "PASS!\n");
 
     return 0;
 }
