@@ -9,4 +9,5 @@
 
 void base16_encode_baseline(char * restrict, const void * restrict, size_t);
 void base16_encode(char * restrict, const void * restrict, size_t);
+void base16_encode2(char * restrict, const void * restrict, size_t);
 

@@ -32,6 +32,7 @@ int main(void)
 {
     int i;
     char buff[3];
+    char buff2[5];
 
     for (i = 0; i <= UCHAR_MAX; i++) {
         base16_encode(buff, &i, sizeof(uint8_t));
@@ -42,6 +43,12 @@ int main(void)
     for (i = 0; i <= UCHAR_MAX; i++) {
         base16_encode_baseline(buff, &i, sizeof(uint8_t));
         printf("%s,%c", buff, i % 16 != 15 ? ' ' : '\n');
+    }
+    puts("");
+
+    for (i = 0; i <= USHRT_MAX; i++) {
+        base16_encode2(buff2, &i, sizeof(uint16_t));
+        printf("%s,%c", buff2, i % 16 != 15 ? ' ' : '\n');
     }
     puts("");
 

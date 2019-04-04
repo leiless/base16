@@ -21993,7 +21993,7 @@ void base16_encode2(char * restrict dst, const void * restrict src, size_t n)
 
     for (i = 0; i < (n>>1); i++) *d++ = tab[*s++];
 
-    if (i & 1) assert((i<<1) + 1 == n);
-    base16_encode((char *) d, s, i & 1);
+    if (n & 1) assert((i<<1) + 1 == n);
+    base16_encode((char *) d, s, n & 1);
 }
 
