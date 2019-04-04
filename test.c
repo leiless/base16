@@ -8,6 +8,9 @@
 
 #include "src/base16.h"
 
+#define M       6
+#define N       (M - 1)
+
 void generate_u32_table(void)
 {
     int i;
@@ -15,14 +18,14 @@ void generate_u32_table(void)
 
     for (i = 0; i <= USHRT_MAX; i++) {
         base16_encode(buff, &i, sizeof(uint16_t));
-        //printf("%s,%c", buff, i % 10 != 9 ? ' ' : '\n');
-        /* Endianness dependent */
-        //printf("%#x,%c", *((uint32_t *) buff), i % 10 != 9 ? ' ' : '\n');
+        printf("%s,%c", buff, i % M != N ? ' ' : '\n');
+        /* Machine endianness */
+        //printf("%#x,%c", *((uint32_t *) buff), i % M != N ? ' ' : '\n');
         /* Big endian(human intuitive) representation */
-        printf("%#x,%c", htonl(*((uint32_t *) buff)), i % 10 != 9 ? ' ' : '\n');
+        //printf("%#x,%c", htonl(*((uint32_t *) buff)), i % M != N ? ' ' : '\n');
     }
 
-    if (USHRT_MAX % 10 != 9) putchar('\n');
+    if (USHRT_MAX % M != N) putchar('\n');
 }
 
 int main(void)
