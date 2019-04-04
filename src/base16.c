@@ -21978,6 +21978,8 @@ static const uint32_t *__base16_enc_tabs32[] = {
 };
 
 /**
+ * Extremly fast(hopefully in without-SIMD world) base16 encoding
+ * With massive .data segment storage overhead(around 512kb)
  * see: base16_encode_baseline
  */
 void base16_encode2(char * restrict dst, const void * restrict src, size_t n)
