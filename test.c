@@ -44,27 +44,6 @@ void generate_u16_table(void)
     exit(EXIT_SUCCESS);
 }
 
-void generate_dec_table(void)
-{
-    int i;
-    int t;
-
-    for (i = 0; i <= UCHAR_MAX; i++) {
-        if (isalpha(i)) {
-            t = 10 + i - (islower(i) ? 'a' : 'A');
-            if (t > 15) t = 0;
-        } else if (isdigit(i)) {
-            t = i - '0';
-        } else {
-            t = 0;
-        }
-
-        printf("%2d,%c", t, i % 16 != 15 ? ' ' : '\n');
-    }
-
-    exit(EXIT_SUCCESS);
-}
-
 #define M       6
 #define N       (M - 1)
 
@@ -90,6 +69,49 @@ void generate_u32_table(void)
     }
 
     if (USHRT_MAX % M != N) putchar('\n');
+
+    exit(EXIT_SUCCESS);
+}
+
+void generate_dec_table(void)
+{
+    int i;
+    int t;
+
+    for (i = 0; i <= UCHAR_MAX; i++) {
+        if (isalpha(i)) {
+            t = 10 + i - (islower(i) ? 'a' : 'A');
+            if (t > 15) t = 0;
+        } else if (isdigit(i)) {
+            t = i - '0';
+        } else {
+            t = 0;
+        }
+
+        printf("%2d,%c", t, i % 16 != 15 ? ' ' : '\n');
+    }
+
+    exit(EXIT_SUCCESS);
+}
+
+void generate_dec_u16_table(void)
+{
+    int i;
+    int j;
+    char enc[2];
+    unsigned char output;
+    ssize_t n;
+
+    for (i = 0; i <= UCHAR_MAX; i++) {
+        for (j = 0; j <= UCHAR_MAX; j++) {
+            enc[0] = i;
+            enc[1] = j;
+            n = nano_base16_decode_baseline(&output, enc, 2);
+            assert(n == 1);
+
+            printf("%3x,%c", output, j % 16 != 15 ? ' ' : '\n');
+        }
+    }
 
     exit(EXIT_SUCCESS);
 }
@@ -175,9 +197,10 @@ int main(void)
     char input[3];
     char expected[5];
 
-    //generate_dec_table();
     //generate_u16_table();
     //generate_u32_table();
+    //generate_dec_table();
+    //generate_dec_u16_table();
 
     b16_encode("", 0, "");
     b16_encode(NULL, 0, "");

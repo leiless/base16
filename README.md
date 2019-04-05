@@ -67,7 +67,7 @@ With `-O2` compiler level optimization:
 
 ```shell
 $ make release
-$ ./test-debug
+$ ./test
 
 Benchmarking  size: 1073741824
 Time elapsed: 1.89828s	nano_base16_encode_baseline()
