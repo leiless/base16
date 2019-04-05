@@ -1,6 +1,7 @@
 *.out
 *.swp
 *.o
+.DS_Store
 test
 test-debug
 
