@@ -155,7 +155,7 @@ void nano_base16_encode(
  * @param n     Base16 rep. buffer size
  *
  * @return      Decoded buffer size(n / 2 if success)
- *              0 if n is zero or n far too large
+ *              0 if n is zero
  *              -1 if failed(odd base16 buffer size)
  */
 ssize_t nano_base16_decode_baseline(
