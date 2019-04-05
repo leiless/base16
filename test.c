@@ -10,7 +10,10 @@
 #include <limits.h>
 #include <arpa/inet.h>
 
+#define NANO_BASE16_MARK_EOS
+
 #include "src/base16.h"
+#include "src/base16i.h"
 
 #define P       8
 #define Q       (P - 1)
@@ -22,7 +25,7 @@ void generate_u16_table(void)
     char buff[3];
 
     for (i = 0; i <= UCHAR_MAX; i++) {
-        base16_encode_baseline(buff, &i, sizeof(uint8_t));
+        nano_base16_encode_baseline(buff, &i, sizeof(uint8_t));
         t = *((uint16_t *) buff);
 
         /* Result string rep. */
@@ -50,7 +53,7 @@ void generate_u32_table(void)
     char buff[5];
 
     for (i = 0; i <= USHRT_MAX; i++) {
-        base16_encode(buff, &i, sizeof(uint16_t));
+        nano_base16_encode(buff, &i, sizeof(uint16_t));
         t = *((uint32_t *) buff);
 
         /* Result string rep. */
@@ -76,16 +79,16 @@ static void b16_encode(const void *src, size_t n, const char *expected)
     static char buff[512];
 
     *buff = '\1';
-    base16_encode_baseline(buff, src, n);
+    nano_base16_encode_baseline(buff, src, n);
     printf("%s\n", buff);
     assert(!strcmp(buff, expected));
 
     *buff = '\2';
-    base16_encode(buff, src, n);
+    nano_base16_encode(buff, src, n);
     assert(!strcmp(buff, expected));
 
     *buff = '\3';
-    base16_encode2(buff, src, n);
+    nano_base16_encode2(buff, src, n);
     assert(!strcmp(buff, expected));
 }
 
@@ -97,26 +100,26 @@ static void enc_bench(const void *src, size_t n)
     clock_t t;
 
     t = clock();
-    base16_encode_baseline(dst, src, n);
+    nano_base16_encode_baseline(dst, src, n);
     t = clock() - t;
 
     printf("\nBenchmarking  size: %zu\n", n);
 
-    printf("Time elapsed: %gs  base16_encode_baseline()\n",
+    printf("Time elapsed: %gs  nano_base16_encode_baseline()\n",
             (double) (t) / CLOCKS_PER_SEC);
 
     t = clock();
-    base16_encode(dst, src, n);
+    nano_base16_encode(dst, src, n);
     t = clock() - t;
 
-    printf("Time elapsed: %gs  base16_encode()\n",
+    printf("Time elapsed: %gs  nano_base16_encode()\n",
             (double) (t) / CLOCKS_PER_SEC);
 
     t = clock();
-    base16_encode2(dst, src, n);
+    nano_base16_encode2(dst, src, n);
     t = clock() - t;
 
-    printf("Time elapsed: %gs  base16_encode2()\n",
+    printf("Time elapsed: %gs  nano_base16_encode2()\n",
             (double) (t) / CLOCKS_PER_SEC);
 
     free(dst);
