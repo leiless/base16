@@ -92,6 +92,10 @@ static void b16_encode(const void *src, size_t n, const char *expected)
     assert(!strcmp(buff, expected));
 }
 
+#ifndef SSIZE_MAX
+#define SSIZE_MAX   LONG_MAX
+#endif
+
 static void enc_bench(const void *src, size_t n)
 {
     assert(n <= SSIZE_MAX);
