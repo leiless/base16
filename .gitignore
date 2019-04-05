@@ -1,3 +1,6 @@
 *.out
 *.swp
+*.o
+test
+test-debug
 
