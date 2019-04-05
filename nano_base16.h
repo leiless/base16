@@ -155,7 +155,7 @@ void nano_base16_encode(
  * @param n     Base16 rep. buffer size
  *
  * @return      Decoded buffer size(n / 2 if success)
- *              0 if n is far too large
+ *              0 if n is zero or n far too large
  *              -1 if failed(odd base16 buffer size)
  */
 ssize_t nano_base16_decode_baseline(
@@ -189,7 +189,6 @@ ssize_t nano_base16_decode_baseline(
     if (n & 1) return -1;
 
     for (i = 0, n >>= 1; i < (ssize_t) n; i++) {
-        /* Bitwise OR operator precedence is left-to-right */
         d[i] = (tab[*s++] << 4);
         d[i] |= tab[*s++];
     }
