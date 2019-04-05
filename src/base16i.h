@@ -15,8 +15,6 @@ extern "C" {
 #include <stddef.h>     /* size_t, NULL */
 #include <stdint.h>     /* uint8_t, uint16_t */
 
-#include "base16.h"
-
 void nano_base16_encode2(char * restrict, const void * restrict, size_t);
 
 #ifdef __cplusplus
@@ -21885,6 +21883,7 @@ void nano_base16_encode2(
         const void * restrict src,
         size_t n)
 {
+    static const char *map = "0123456789ABCDEF";
     static const uint32_t *tabvec[] = {
         __base16_enc_le32__, __base16_enc_be32__,
     };
@@ -21899,8 +21898,16 @@ void nano_base16_encode2(
 
     for (i = 0; i < (n>>1); i++) *d++ = tab[*s++];
 
-    if (n & 1) assert((i<<1) + 1 == n);
-    nano_base16_encode((char *) d, s, n & 1);
+    if (n & 1) {
+        assert((i << 1) + 1 == n);
+        *((char *) d) = map[*((uint8_t *) s) >> 4];
+        *((char *) d + 1) = map[*((uint8_t *) s) & 0xf];
+        d = (uint32_t *) ((char *) d + 2);
+    }
+
+#ifdef NANO_BASE16_MARK_EOS
+    *((char *) d) = '\0';
+#endif
 }
 
 #endif  /* __NANO_BASE16I_H */
