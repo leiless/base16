@@ -16,6 +16,7 @@ extern "C" {
 
 void nano_base16_encode_baseline(char * restrict, const void * restrict, size_t);
 void nano_base16_encode(char * restrict, const void * restrict, size_t);
+ssize_t nano_base16_decode_baseline(void * restrict, const char * restrict, size_t);
 
 #ifdef __cplusplus
 }
@@ -144,6 +145,56 @@ void nano_base16_encode(
 #ifdef NANO_BASE16_MARK_EOS
     *((char *) d) = '\0';
 #endif
+}
+
+/**
+ * Decode a base16 representation into its original data
+ *
+ * @param dst   Output decoded buffer(at least sized n / 2)
+ * @param src   Base16 rep. buffer
+ * @param n     Base16 rep. buffer size
+ *
+ * @return      Decoded buffer size(n / 2 if success)
+ *              0 if n is far too large
+ *              -1 if failed(odd base16 buffer size)
+ */
+ssize_t nano_base16_decode_baseline(
+        void * restrict dst,
+        const char * restrict src,
+        size_t n)
+{
+    /* see: generate_dec_table() */
+    static const uint8_t tab[] = {
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  0,  0,  0,  0,  0,  0,
+         0, 10, 11, 12, 13, 14, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0, 10, 11, 12, 13, 14, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    };
+    ssize_t i;
+    uint8_t *d = (uint8_t *) dst;
+    const uint8_t *s = (const uint8_t *) src;
+
+    if (n & 1) return -1;
+
+    for (i = 0, n >>= 1; i < (ssize_t) n; i++) {
+        /* Bitwise OR operator precedence is left-to-right */
+        d[i] = (tab[*s++] << 4);
+        d[i] |= tab[*s++];
+    }
+
+    return i;
 }
 
 #endif  /* __NANO_BASE16_H */

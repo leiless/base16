@@ -9,6 +9,7 @@
 #include <string.h>
 #include <limits.h>
 #include <arpa/inet.h>
+#include <ctype.h>
 
 #define NANO_BASE16_MARK_EOS
 
@@ -39,6 +40,27 @@ void generate_u16_table(void)
     }
 
     if (UCHAR_MAX % P != Q) putchar('\n');
+
+    exit(EXIT_SUCCESS);
+}
+
+void generate_dec_table(void)
+{
+    int i;
+    int t;
+
+    for (i = 0; i <= UCHAR_MAX; i++) {
+        if (isalpha(i)) {
+            t = 10 + i - (islower(i) ? 'a' : 'A');
+            if (t > 15) t = 0;
+        } else if (isdigit(i)) {
+            t = i - '0';
+        } else {
+            t = 0;
+        }
+
+        printf("%2d,%c", t, i % 16 != 15 ? ' ' : '\n');
+    }
 
     exit(EXIT_SUCCESS);
 }
@@ -81,15 +103,30 @@ static void b16_encode(const void *src, size_t n, const char *expected)
     *buff = '\1';
     nano_base16_encode_baseline(buff, src, n);
     printf("%s\n", buff);
-    assert(!strcmp(buff, expected));
+    assert(!strncmp(buff, expected, n<<1));
 
     *buff = '\2';
     nano_base16_encode(buff, src, n);
-    assert(!strcmp(buff, expected));
+    assert(!strncmp(buff, expected, n<<1));
 
     *buff = '\3';
     nano_base16_encode2(buff, src, n);
-    assert(!strcmp(buff, expected));
+    assert(!strncmp(buff, expected, n<<1));
+}
+
+static void b16_decode(const char *src, size_t n, const void *expected)
+{
+    assert((n & 1) == 0);
+    printf("b16_decode('%s', %zu, '%.*s');\n", src, n, (int) n>>1, (char *) expected);
+
+    static char buff[512];
+    size_t count;
+
+    *buff = '\1';
+    count = nano_base16_decode_baseline(buff, src, n);
+    assert((count << 1) == n);
+    printf("%.*s\n", (int) count, buff);
+    assert(!memcmp(buff, expected, count));
 }
 
 #ifndef SSIZE_MAX
@@ -138,11 +175,13 @@ int main(void)
     char input[3];
     char expected[5];
 
+    //generate_dec_table();
     //generate_u16_table();
     //generate_u32_table();
 
     b16_encode("", 0, "");
     b16_encode(NULL, 0, "");
+    b16_encode("", 0, NULL);
     b16_encode("", 1, "00");
     b16_encode("f", 1, "66");
     b16_encode("fo", 2, "666F");
@@ -156,6 +195,22 @@ int main(void)
     b16_encode("0123456789#", 10, "30313233343536373839");
     b16_encode("0123456789ABCDEF", 10, "30313233343536373839");
     b16_encode("0123456789ABCDEF", 15, "303132333435363738394142434445");
+
+    b16_decode("", 0, "");
+    b16_decode(NULL, 0, "");
+    b16_decode("", 0, NULL);
+    b16_decode("00", 2, "");
+    b16_decode("66", 2, "f");
+    b16_decode("666f", 4, "fo");
+    b16_decode("666f6F", 6, "foo");
+    b16_decode("666F6f", 6, "foo");
+    b16_decode("666F6f62", 8, "foob");
+    b16_decode("666f6f6261", 10, "fooba");
+    b16_decode("666F6F626172", 12, "foobar");
+    b16_decode("666f6F62617221", 12, "foobar!");
+    b16_decode("666F6f6261722139", 12, "foobar!#");
+    b16_decode("30313233343536373839", 20, "0123456789ABCDEF");
+    b16_decode("303132333435363738394142434445", 30, "0123456789ABCDEF");
 
     for (i = 0; i <= UCHAR_MAX; i++) {
         input[0] = (uint8_t) i;
@@ -181,6 +236,8 @@ int main(void)
 
         b16_encode(input, 2, expected);
     }
+
+    //exit(EXIT_SUCCESS);
 
     size_t n;
     char *src;
