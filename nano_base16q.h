@@ -4,8 +4,8 @@
  * see: LICENSE
  */
 
-#ifndef __NANO_BASE16I_H
-#define __NANO_BASE16I_H
+#ifndef __NANO_BASE16Q_H
+#define __NANO_BASE16Q_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -21910,5 +21910,5 @@ void nano_base16_encode2(
 #endif
 }
 
-#endif  /* __NANO_BASE16I_H */
+#endif  /* __NANO_BASE16Q_H */
 

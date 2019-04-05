@@ -12,8 +12,8 @@
 
 #define NANO_BASE16_MARK_EOS
 
-#include "src/base16.h"
-#include "src/base16i.h"
+#include "nano_base16.h"
+#include "nano_base16q.h"
 
 #define P       8
 #define Q       (P - 1)
