@@ -52,6 +52,15 @@ Without compiler level optimization:
 $ make [ debug ]
 $ ./test-debug
 
+Benchmarking  size: 1073741824
+Time elapsed: 19.2773s	nano_base16_encode_baseline()
+Time elapsed: 2.45246s	nano_base16_encode()
+Time elapsed: 1.40033s	nano_base16_encode2()
+
+Benchmarking  size: 3221225472
+Time elapsed: 46.7634s	nano_base16_encode_baseline()
+Time elapsed: 7.32601s	nano_base16_encode()
+Time elapsed: 4.20426s	nano_base16_encode2()
 ```
 
 With `-O2` compiler level optimization:
@@ -60,6 +69,15 @@ With `-O2` compiler level optimization:
 $ make release
 $ ./test-debug
 
+Benchmarking  size: 1073741824
+Time elapsed: 1.89828s	nano_base16_encode_baseline()
+Time elapsed: 0.5519s	nano_base16_encode()
+Time elapsed: 0.332284s	nano_base16_encode2()
+
+Benchmarking  size: 3221225472
+Time elapsed: 5.59842s	nano_base16_encode_baseline()
+Time elapsed: 1.66608s	nano_base16_encode()
+Time elapsed: 0.993617s	nano_base16_encode2()
 ```
 
 Above result reveal that the `nano_base16_encode` is a good in-production choice between speed and `.data` segment cache overhead.
