@@ -104,15 +104,24 @@ void generate_dec_u16_table(void)
 
     for (i = 0; i <= UCHAR_MAX; i++) {
         for (j = 0; j <= UCHAR_MAX; j++) {
+            /* Little endian */
+            //enc[0] = j;
+            //enc[1] = i;
+
+            /* Big endian */
             enc[0] = i;
             enc[1] = j;
+
             n = nano_base16_decode_baseline(&output, enc, 2);
             assert(n == 1);
 
-            printf("%3x,%c", output, j % 16 != 15 ? ' ' : '\n');
+            printf("%#4x,%c",
+                    output,
+                    (i * (UCHAR_MAX + 1) + j) % 13 != 12 ? ' ' : '\n');
         }
     }
 
+    putchar('\n');
     exit(EXIT_SUCCESS);
 }
 
@@ -146,6 +155,12 @@ static void b16_decode(const char *src, size_t n, const void *expected)
 
     *buff = '\1';
     count = nano_base16_decode_baseline(buff, src, n);
+    assert((count << 1) == n);
+    printf("%.*s\n", (int) count, buff);
+    assert(!memcmp(buff, expected, count));
+
+    *buff = '\2';
+    count = nano_base16_decode(buff, src, n);
     assert((count << 1) == n);
     printf("%.*s\n", (int) count, buff);
     assert(!memcmp(buff, expected, count));
