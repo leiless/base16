@@ -109,21 +109,21 @@ static void enc_bench(const void *src, size_t n)
 
     printf("\nBenchmarking  size: %zu\n", n);
 
-    printf("Time elapsed: %gs  nano_base16_encode_baseline()\n",
+    printf("Time elapsed: %gs\tnano_base16_encode_baseline()\n",
             (double) (t) / CLOCKS_PER_SEC);
 
     t = clock();
     nano_base16_encode(dst, src, n);
     t = clock() - t;
 
-    printf("Time elapsed: %gs  nano_base16_encode()\n",
+    printf("Time elapsed: %gs\tnano_base16_encode()\n",
             (double) (t) / CLOCKS_PER_SEC);
 
     t = clock();
     nano_base16_encode2(dst, src, n);
     t = clock() - t;
 
-    printf("Time elapsed: %gs  nano_base16_encode2()\n",
+    printf("Time elapsed: %gs\tnano_base16_encode2()\n",
             (double) (t) / CLOCKS_PER_SEC);
 
     free(dst);
