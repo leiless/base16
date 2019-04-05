@@ -71,7 +71,7 @@ void generate_u32_table(void)
 
 static void b16_encode(const void *src, size_t n, const char *expected)
 {
-    printf("b16_encode('%s', %zu, '%s');\n", src, n, expected);
+    printf("b16_encode('%s', %zu, '%s');\n", (const char *) src, n, expected);
 
     static char buff[512];
 

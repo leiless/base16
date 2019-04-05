@@ -65,7 +65,7 @@ Time elapsed: 4.41439s  base16_encode2()
 With `-O2` compiler level optimization:
 
 ```shell
-$ gcc -Wall -O0 -std=c99 test.c src/base16.c
+$ gcc -Wall -O2 -std=c99 test.c src/base16.c
 
 Benchmarking  size: 1073741824
 Time elapsed: 2.53202s  base16_encode_baseline()
@@ -89,6 +89,8 @@ Above result reveal that the `base16_encode` is a good in-production choice betw
 * Run tests on big endian machine.
 
 * Make this header compatible with C++; Platform porting.
+
+* Add a `Makefile`
 
 # *References*
 
