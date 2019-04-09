@@ -26,7 +26,17 @@ TL;DR. `nano_base16_encode`
 
 # Decode APIs
 
-TODO
+There're two decode methods:
+
+```c
+ssize_t nano_base16_decode_baseline(void * restrict, const char * restrict, size_t);
+
+ssize_t nano_base16_decode(void * restrict, const char * restrict, size_t);
+```
+
+The former uses definition-intuitive way for encoding.
+
+The latter decode just like opposite of `nano_base16_encode2`, which take two bytes as a while in each iteration.
 
 # Test
 
@@ -82,11 +92,15 @@ Time elapsed: 0.993617s	nano_base16_encode2()
 
 Above result reveal that the `nano_base16_encode` is a good in-production choice between speed and `.data` segment cache overhead.
 
+`nano_base16_decode_baseline` have similar performance as `nano_base16_encode`.
+
+`nano_base16_decode` have similar performance as `nano_base16_encode2`.
+
 # TODO
 
 * Run tests on big endian machine.
 
-* Make this header compatible with C++; Platform porting.
+* Windows platform porting.
 
 # *References*
 
